@@ -18,10 +18,11 @@
       <!-- 频道部分 -->
       <!-- (重要)每个van-tab代表一个标签导航，中间夹着内容，对应的下属列表内容-->
       <!-- (重要)每个van-tab都对应独立的自己的ArticleList-->
-      <van-tabs v-model="active" animated sticky offset-top="1.226667rem">
+      <van-tabs v-model="channelId" @change="channelChangeFn" animated sticky offset-top="1.226667rem">
         <!-- key提升更新性能 -->
-        <van-tab :title="obj.name" v-for="obj in userChannelList" :key="obj.id">
-          <ArticleList></ArticleList>
+        <van-tab :title="obj.name" v-for="obj in userChannelList" :key="obj.id"
+        :name="obj.id">
+           <ArticleList :channelId="channelId"></ArticleList>
         </van-tab>
       </van-tabs>
     </div>
@@ -30,16 +31,17 @@
 
 <script>
 import logoPng from '../../assets/toutiao_logo.png'
-import { getAllArticleListAPI, getUserChannelsAPI } from '@/api'
+import { getUserChannelsAPI } from '@/api'
 import ArticleList from './components/ArticleList.vue'
 
 export default {
   name: 'Home',
   data () {
     return {
-      active: 0,
+      channelId: 0, // tab导航-激活频道id（默认id为0，页面刚打开是推荐频道）
       imgObj: logoPng,
       userChannelList: [] // 用户选择频道列表
+      // articleList: [] // 文章列表
     }
   },
   async created () {
@@ -49,11 +51,20 @@ export default {
     this.userChannelList = res.data.data.channels
 
     // 文章列表
-    const res2 = await getAllArticleListAPI({
-      channel_id: 0, // 先默认请求推荐频道数据
-      timestamp: new Date().getTime()
-    })
-    console.log(res2)
+    // this.channelChangeFn()
+  },
+  methods: {
+    // tabs切换的事件 -> 获取文章列表数据
+    async channelChangeFn () {
+      // 文章列表
+      // const res2 = await getAllArticleListAPI({
+      //   channel_id: this.channelId,
+      //   // channel_id: 0, // 先默认请求推荐频道数据
+      //   timestamp: new Date().getTime()
+      // })
+      // console.log(res2)
+      // this.articleList = res2.data.data.results
+    }
   },
   components: { ArticleList }
 }
