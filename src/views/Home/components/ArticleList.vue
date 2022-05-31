@@ -1,17 +1,19 @@
 <template>
   <div>
-    <van-list
-      v-model="loading"
-      :finished="finished"
-      finished-text="没有更多了"
-      @load="onLoad"
-      :immediate-check="false"
-      offset="50"
-    >
-    <!-- 文章列表 -->
-    <ArticleItem v-for="obj in list" :key="obj.art_id" :artObj="obj">
-    </ArticleItem>
-     </van-list>
+    <van-pull-refresh v-model="isLoading" @refresh="onRefresh">
+      <van-list
+        v-model="loading"
+        :finished="finished"
+        finished-text="没有更多了"
+        @load="onLoad"
+        :immediate-check="false"
+        offset="50"
+      >
+        <!-- 文章列表 -->
+        <ArticleItem v-for="obj in list" :key="obj.art_id" :artObj="obj">
+        </ArticleItem>
+      </van-list>
+    </van-pull-refresh>
   </div>
 </template>
 
@@ -36,7 +38,8 @@ export default {
       list: [], // 文章列表数组
       loading: false, // 底部加载状态
       finished: false, // 底部完成状态
-      theTime: new Date().getTime() // 用于分页
+      theTime: new Date().getTime(), // 用于分页
+      isLoading: false // 顶部加载状态
     }
   },
   components: {
@@ -73,9 +76,27 @@ export default {
 
       this.loading = false // 如果不关，底部一直是加载中状态，下次触底不会出发onLoad
       // if (res.data.data.results.length === 0) {
-      if (res.data.data.pre_timestamp === null) { // 本次数据为最后的，没有下一段时间戳
+      if (res.data.data.pre_timestamp === null) {
+        // 本次数据为最后的，没有下一段时间戳
         this.finished = true
       }
+    },
+    // 顶部-刷新数据事件方法
+    async onRefresh () {
+      // 目标：list数组清空，来请求新的数据
+      this.list = []
+      this.theTime = new Date().getTime()
+
+      const res = await getAllArticleListAPI({
+        channel_id: this.channelId,
+        timestamp: this.theTime
+      })
+      console.log(res)
+      this.list = [...this.list, ...res.data.data.results]
+      this.theTime = res.data.data.pre_timestamp
+
+      // 顶部加载状态改为false
+      this.isLoading = false
     }
   }
 }
