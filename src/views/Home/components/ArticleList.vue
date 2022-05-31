@@ -46,57 +46,51 @@ export default {
     ArticleItem
   },
   async created () {
-    const res = await getAllArticleListAPI({
-      channel_id: this.channelId,
-      timestamp: this.theTime
-    })
-    console.log(res)
-    // pre_timestamp
-    // 下一段开头的文章的时间戳
-    // 第一次 系统时间（timestamp)-> 后台返回0-9条数据 ->携带第10条pre_timestamp值返回
-    // 第二次 (timestamp)-上一次pre_timestamp(代表告诉后，从指定的时间戳再往后找10个) 10-19条，20条pre_timestamp返回
-
-    this.list = res.data.data.results
-    this.theTime = res.data.data.pre_timestamp
+    this.getArticleListFn()
   },
   methods: {
-    // 底部加载事件方法
-    async onLoad () {
-      if (this.list.length === 0) {
-        return // 如果页面没有数据，没有高度，让本次onLoad逻辑代码不往下执行
-      }
-
+    // 专门负责发送请求
+    async getArticleListFn () {
       const res = await getAllArticleListAPI({
         channel_id: this.channelId,
         timestamp: this.theTime
       })
       console.log(res)
+      // created()上来第一次list是空数组,合并空数组没问题
+      // onLoad()触底加载更多，2个数组合并更没问题
       this.list = [...this.list, ...res.data.data.results]
+      // pre_timestamp
+      // 下一段开头的文章的时间戳
+      // 第一次 系统时间（timestamp)-> 后台返回0-9条数据 ->携带第10条pre_timestamp值返回
+      // 第二次 (timestamp)-上一次pre_timestamp(代表告诉后，从指定的时间戳再往后找10个) 10-19条，20条pre_timestamp返回
       this.theTime = res.data.data.pre_timestamp
 
+      // created()上来走一次，loading没触底本身就是false，但是给false也没问题
+      // 为了一会儿onLoad()调用时，才有用
+
+      // 对异步请求进行处理，需要都放入该方法中
       this.loading = false // 如果不关，底部一直是加载中状态，下次触底不会出发onLoad
       // if (res.data.data.results.length === 0) {
       if (res.data.data.pre_timestamp === null) {
         // 本次数据为最后的，没有下一段时间戳
         this.finished = true
       }
+      // 顶部加载状态改为false
+      this.isLoading = false
+    },
+    // 底部加载事件方法
+    async onLoad () {
+      if (this.list.length === 0) {
+        return // 如果页面没有数据，没有高度，让本次onLoad逻辑代码不往下执行
+      }
+      this.getArticleListFn()
     },
     // 顶部-刷新数据事件方法
     async onRefresh () {
       // 目标：list数组清空，来请求新的数据
       this.list = []
       this.theTime = new Date().getTime()
-
-      const res = await getAllArticleListAPI({
-        channel_id: this.channelId,
-        timestamp: this.theTime
-      })
-      console.log(res)
-      this.list = [...this.list, ...res.data.data.results]
-      this.theTime = res.data.data.pre_timestamp
-
-      // 顶部加载状态改为false
-      this.isLoading = false
+      this.getArticleListFn()
     }
   }
 }
