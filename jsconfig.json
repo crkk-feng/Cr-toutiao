@@ -3,6 +3,7 @@
     "target": "es5",
     "module": "esnext",
     "baseUrl": "./",
+    "jsx": "preserve", //在这里添加"jsx": "preserve",
     "moduleResolution": "node",
     "paths": {
       "@/*": [
