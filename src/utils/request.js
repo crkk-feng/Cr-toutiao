@@ -2,7 +2,7 @@
 import ajax from 'axios'
 // 新建一个新的axios实例
 const axios = ajax.create({
-  baseURL: 'https://toutiao.itheima.net', // 基地址
+  baseURL: 'http://geek.itheima.net', // 基地址
   timeout: 20000 // 20秒超时时间
 })
 

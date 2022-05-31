@@ -5,6 +5,8 @@
       :finished="finished"
       finished-text="没有更多了"
       @load="onLoad"
+      :immediate-check="false"
+      offset="50"
     >
     <!-- 文章列表 -->
     <ArticleItem v-for="obj in list" :key="obj.art_id" :artObj="obj">
@@ -16,6 +18,13 @@
 <script>
 import ArticleItem from './ArticleItem.vue'
 import { getAllArticleListAPI } from '@/api'
+
+// 产生问题：网页刚打开，created里请求和onLoad里请求同时发送，请求的都是最新数据
+// onLoad中，2次一样的数据合并，数据重复，key重复了
+// 原因：van-list组件，组件挂载时，默认就会判定一次是否触底
+// 第一页数据也是网络请求回来的，标签先挂载了，数据回来更新DOM，所以标签没有高度，list的load事件上来就触发
+// 解决1：list组件添加 :immediate-check="false" 上来初始化时不判定
+// 解决2：onLoad第一行，写数组长度判断
 
 export default {
   props: {
@@ -36,7 +45,7 @@ export default {
   async created () {
     const res = await getAllArticleListAPI({
       channel_id: this.channelId,
-      timestamp: new Date().getTime()
+      timestamp: this.theTime
     })
     console.log(res)
     // pre_timestamp
@@ -45,24 +54,28 @@ export default {
     // 第二次 (timestamp)-上一次pre_timestamp(代表告诉后，从指定的时间戳再往后找10个) 10-19条，20条pre_timestamp返回
 
     this.list = res.data.data.results
-    this.theTime = res.data.data.pre_tiemstamp
+    this.theTime = res.data.data.pre_timestamp
   },
   methods: {
     // 底部加载事件方法
     async onLoad () {
+      if (this.list.length === 0) {
+        return // 如果页面没有数据，没有高度，让本次onLoad逻辑代码不往下执行
+      }
+
       const res = await getAllArticleListAPI({
         channel_id: this.channelId,
-        timestamp: new Date().getTime()
+        timestamp: this.theTime
       })
       console.log(res)
-      if (res.data.data.results.length === 0) {
-        this.finished = true
-        return
-      }
       this.list = [...this.list, ...res.data.data.results]
-      this.theTime = res.data.data.pre_tiemstamp
+      this.theTime = res.data.data.pre_timestamp
 
       this.loading = false // 如果不关，底部一直是加载中状态，下次触底不会出发onLoad
+      // if (res.data.data.results.length === 0) {
+      if (res.data.data.pre_timestamp === null) { // 本次数据为最后的，没有下一段时间戳
+        this.finished = true
+      }
     }
   }
 }
