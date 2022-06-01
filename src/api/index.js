@@ -20,7 +20,7 @@ export const getAllChannelsAPI = () => request({
   method: 'GET'
 })
 
-// 获取 - 获取用户选择的频道
+// 频道 - 获取用户选择的频道
 // 注意：用户没有登录，默认返回后台设置的默认频道列表
 export const getUserChannelsAPI = () => request({
   url: '/v1_0/user/channels'
@@ -28,6 +28,21 @@ export const getUserChannelsAPI = () => request({
   //   // Authorization: 'Bearer ' + store.state.token
   //   Authorization: `Bearer ${getToken()}`
   // }
+})
+
+// 频道 - 更新覆盖频道
+export const updateChannelsAPI = ({ channels }) => request({
+  url: '/v1_0/user/channels',
+  method: 'PUT',
+  data: {
+    channels // 用户已选整个频道数组
+  }
+})
+
+// 频道 - 删除用户指定的频道
+export const removeTheChannelAPI = ({ channelId }) => request({
+  url: `/v1_0/user/channels/${channelId}`,
+  method: 'DELETE'
 })
 
 // 文章 - 获取列表
