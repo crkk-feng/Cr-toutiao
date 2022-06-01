@@ -10,7 +10,13 @@
         offset="50"
       >
         <!-- 文章列表 -->
-        <ArticleItem v-for="obj in list" :key="obj.art_id" :artObj="obj">
+        <ArticleItem
+          v-for="obj in list"
+          :key="obj.art_id"
+          :artObj="obj"
+          @disLikeEV="disLikeFn"
+          @reportEV="reportFn"
+        >
         </ArticleItem>
       </van-list>
     </van-pull-refresh>
@@ -19,7 +25,8 @@
 
 <script>
 import ArticleItem from './ArticleItem.vue'
-import { getAllArticleListAPI } from '@/api'
+import { getAllArticleListAPI, dislikeArticleAPI, reportArticleAPI } from '@/api'
+import { Notify } from 'vant'
 
 // 产生问题：网页刚打开，created里请求和onLoad里请求同时发送，请求的都是最新数据
 // onLoad中，2次一样的数据合并，数据重复，key重复了
@@ -91,6 +98,33 @@ export default {
       this.list = []
       this.theTime = new Date().getTime()
       this.getArticleListFn()
+    },
+    // 反馈-不感兴趣
+    async disLikeFn (id) {
+      // const res = await dislikeArticleAPI({
+      try {
+        await dislikeArticleAPI({
+          artId: id
+        })
+        // res里没有什么有用的信息，所以await往下放行，证明请求和响应成功，反馈成功
+        // console.log(res)
+        Notify({ type: 'success', message: '反馈成功' })
+      } catch (err) {
+        Notify({ type: 'warning', message: '反馈失败-联系程序员' })
+      }
+    },
+    // 反馈-垃圾内容
+    async reportFn (id, value) {
+      try {
+        await reportArticleAPI({
+          artId: id,
+          type: value,
+          remark: '其他问题'
+        })
+        Notify({ type: 'success', message: '举报成功' })
+      } catch (err) {
+        Notify({ type: 'warning', message: '举报失败' })
+      }
     }
   }
 }

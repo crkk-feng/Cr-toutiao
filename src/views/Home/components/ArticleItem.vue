@@ -89,6 +89,13 @@ export default {
       if (action.name === '反馈垃圾内容') {
         this.actions = secondActions
         this.bottomText = '返回'
+      } else if (action.name === '不感兴趣') {
+        this.$emit('disLikeEV', this.artObj.art_id)
+        this.show = false // 让反馈面板消失
+      } else { // 二级反馈选项
+        this.$emit('reportEV', this.artObj.art_id, action.value)
+        // this.actions = firstActions
+        this.show = false // 关闭，cancel可以直接切回
       }
     },
     // 底部按钮-点击事件

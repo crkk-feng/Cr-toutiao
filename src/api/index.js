@@ -44,3 +44,31 @@ export const getAllArticleListAPI = ({ channel_id, timestamp }) => {
     }
   })
 }
+
+// 文章 - 反馈 - 不感兴趣
+export const dislikeArticleAPI = ({ artId }) => request({
+  url: '/v1_0/article/dislikes',
+  method: 'POST',
+  headers: {
+    Authorization: `Bearer ${getToken()}`
+  },
+  data: {
+    target: artId
+  }
+})
+
+// 文章 - 反馈 - 反馈垃圾内容
+export const reportArticleAPI = ({ artId, type, remark }) => {
+  return request({
+    url: '/v1_0/article/reports',
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    data: {
+      target: artId,
+      type: type,
+      remark: remark
+    }
+  })
+}
