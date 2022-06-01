@@ -102,6 +102,8 @@ export default {
     // 反馈-不感兴趣
     async disLikeFn (id) {
       // const res = await dislikeArticleAPI({
+      // 如果用try+catch自己处理错误，内部throw就不会向控制台抛出打印错误，而是交给你的catch内来自定义错误处理
+      // try+catch捕获同步代码的异常
       try {
         await dislikeArticleAPI({
           artId: id
@@ -109,8 +111,10 @@ export default {
         // res里没有什么有用的信息，所以await往下放行，证明请求和响应成功，反馈成功
         // console.log(res)
         Notify({ type: 'success', message: '反馈成功' })
+        console.log('成功了')
       } catch (err) {
-        Notify({ type: 'warning', message: '反馈失败-联系程序员' })
+        // Notify({ type: 'warning', message: '反馈失败-联系程序员' })
+        console.log('失败了')
       }
     },
     // 反馈-垃圾内容
@@ -123,7 +127,7 @@ export default {
         })
         Notify({ type: 'success', message: '举报成功' })
       } catch (err) {
-        Notify({ type: 'warning', message: '举报失败' })
+        // Notify({ type: 'warning', message: '举报失败' })
       }
     }
   }
