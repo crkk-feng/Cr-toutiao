@@ -39,7 +39,7 @@
       <van-cell title="搜索历史">
         <!-- 使用 right-icon 插槽来自定义右侧图标 -->
         <template #right-icon>
-          <van-icon name="delete" class="search-icon" />
+          <van-icon name="delete" class="search-icon" @click="clearFn" />
         </template>
       </van-cell>
 
@@ -70,7 +70,8 @@ export default {
       kw: '', // 搜索关键字
       timer: null, // 防抖的定时器
       suggestList: [], // 联想建议列表
-      history: ['API', 'java', 'css', '前端', '后台接口', 'python'] // 搜索历史
+      // parse转回数组
+      history: JSON.parse(localStorage.getItem('his')) || [] // 搜索历史
     }
   },
   methods: {
@@ -114,31 +115,70 @@ export default {
       // 使用v-html解析
     },
     moveFn (theKw) {
-      this.$router.push({
-        path: `/search_result/${theKw}`
-      })
+      // 路由跳转传参
+      // 方式1:路径/值(前提:路由规则:变量名)，-> 接收: $route.params
+      // 方式2:路径?参数名=值->接收:$route.query
+      // 这2种方式，你都可以自己在path后面路径拼接
+      // 还可以用$router.push配置项params和query让js代码内帮你拼接
+
+      // 坑：路由跳转，在watch之前执行，所以要让路由跳转，来一个定时器包裹
+      // watch异步执行
+      // 宏任务，微任务
+      setTimeout(() => {
+        this.$router.push({
+          path: `/search_result/${theKw}`
+        })
+      }, 0)
     },
     // 输入框-搜索事件
     searchFn () {
-    //   console.log(123)
-    //   this.$router.push({
-    //     path: `/search_result/${this.kw}`
-    //   })
-      this.moveFn(this.kw)
+      //   console.log(123)
+      //   this.$router.push({
+      //     path: `/search_result/${this.kw}`
+      //   })
+      if (this.kw.length > 0) {
+        // 搜索关键字 - 保存到数组里
+        this.history.push(this.kw)
+        this.moveFn(this.kw)
+      }
     },
     // 联想菜单-点击事件
     suggestClickFn (str) {
-    //   this.$router.push({
-    //     path: `/search_result/${str}`
-    //   })
+      //   this.$router.push({
+      //     path: `/search_result/${str}`
+      //   })
+      this.history.push(str)
       this.moveFn(str)
     },
     // 搜索历史-点击事件
     historyClickFn (str) {
-    //   this.$router.push({
-    //     path: `/search_result/${str}`
-    //   })
+      //   this.$router.push({
+      //     path: `/search_result/${str}`
+      //   })
       this.moveFn(str)
+    },
+    // 清除历史记录
+    clearFn () {
+      this.history = []
+    }
+  },
+  // watch侦听器使用
+  watch: {
+    history: {
+      // 历史记录数组改变
+      deep: true,
+      handler () {
+        // 立刻覆盖式的保存到本地
+        // JSON转成字符串，浏览器只能存字符串
+        // ES6新增了2种引用类型(以前 Array,object)，(新增:Set Map)
+        // Set:无序不重复的value集合体（无下角标)
+        // 特点：传入元素有重复，会自动清理，返回无重复Set对象
+        // 注意：如果值是对象比较的是对象内存地址
+        const theSet = new Set(this.history)
+        // Set类型 -> Array数组类型
+        const arr = Array.from(theSet)
+        localStorage.setItem('his', JSON.stringify(arr))
+      }
     }
   }
 }

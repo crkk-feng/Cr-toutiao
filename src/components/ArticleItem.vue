@@ -8,20 +8,35 @@
           <!-- 标题 -->
           <span>{{ artObj.title }}</span>
           <!-- 单图 -->
-          <img
+          <!-- <img
             class="thumb"
             :src="artObj.cover.images[0]"
             v-if="artObj.cover.type === 1"
-          />
+          /> -->
+          <van-image
+            class="thumb"
+            :src="artObj.cover.images[0]"
+            v-if="artObj.cover.type === 1"
+          >
+            <template v-slot:error>图片走丢了</template>
+          </van-image>
         </div>
         <!-- 三张图片 -->
         <div class="thumb-box" v-if="artObj.cover.type > 1">
-          <img
+          <!-- <img
             class="thumb"
             v-for="(imgUrl, index) in artObj.cover.images"
             :key="index"
             :src="imgUrl"
-          />
+          /> -->
+          <van-image
+            class="thumb"
+            v-for="(imgUrl, index) in artObj.cover.images"
+            :key="index"
+            :src="imgUrl"
+          >
+            <template v-slot:error>图片走丢了</template>
+          </van-image>
         </div>
       </template>
       <!-- label 区域的插槽 -->
@@ -33,7 +48,7 @@
             <span>{{ formatTime(artObj.pubdate) }}</span>
           </div>
           <!-- 反馈按钮 -->
-          <van-icon name="cross" @click="show = true" />
+          <van-icon name="cross" @click="show = true" v-if="isShow" />
         </div>
       </template>
     </van-cell>
@@ -68,7 +83,11 @@ import { timeAgo } from '@/utils/data'
 import { firstActions, secondActions } from '@/api/report.js'
 export default {
   props: {
-    artObj: Object // 文章对象
+    artObj: Object, // 文章对象
+    isShow: {
+      type: Boolean,
+      default: true // 首页不再需要改动
+    }
   },
   data () {
     return {
@@ -92,7 +111,8 @@ export default {
       } else if (action.name === '不感兴趣') {
         this.$emit('disLikeEV', this.artObj.art_id)
         this.show = false // 让反馈面板消失
-      } else { // 二级反馈选项
+      } else {
+        // 二级反馈选项
         this.$emit('reportEV', this.artObj.art_id, action.value)
         // this.actions = firstActions
         this.show = false // 关闭，cancel可以直接切回

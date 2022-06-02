@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import ArticleItem from './ArticleItem.vue'
+import ArticleItem from '../../../components/ArticleItem.vue'
 import { getAllArticleListAPI, dislikeArticleAPI, reportArticleAPI } from '@/api'
 import { Notify } from 'vant'
 

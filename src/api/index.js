@@ -90,3 +90,13 @@ export const suggestListAPI = ({ keywords }) => request({
     q: keywords
   }
 })
+
+// 搜索 - 搜索结果列表
+export const searchResultAPI = ({ page = 1, per_page = 10, q }) => request({
+  url: '/v1_0/search',
+  params: {
+    page,
+    per_page,
+    q
+  }
+})
