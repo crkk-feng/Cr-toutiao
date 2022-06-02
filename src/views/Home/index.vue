@@ -10,7 +10,7 @@
         </template>
         <template #right>
           <!-- 坑: postcss只能翻译style里css样式代码，标签内行内样式它无法转换px转rem,所以需要自己手动计算 -->
-          <van-icon name="search" size="0.48rem" color="#fff" />
+          <van-icon name="search" size="0.48rem" color="#fff" @click="moveSearchPageFn"/>
         </template>
       </van-nav-bar>
     </div>
@@ -165,6 +165,10 @@ export default {
       this.show = false
       // 需要让内部的编辑状态回归false
       this.$refs.editRef.isEdit = false
+    },
+    // 首页-右上角放大镜点击事件 -> 跳转搜索页面
+    moveSearchPageFn () {
+      this.$router.push('/search')
     }
   },
   components: {

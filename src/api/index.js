@@ -46,18 +46,16 @@ export const removeTheChannelAPI = ({ channelId }) => request({
 })
 
 // 文章 - 获取列表
-export const getAllArticleListAPI = ({ channel_id, timestamp }) => {
-  return request({
-    url: '/v1_0/articles',
-    // headers: {
-    //   Authorization: `Bearer ${getToken()}`
-    // },
-    params: { // 这里的参数，axios会帮你拼接在URL？后面（查询字符串）
-      channel_id,
-      timestamp
-    }
-  })
-}
+export const getAllArticleListAPI = ({ channel_id, timestamp }) => request({
+  url: '/v1_0/articles',
+  // headers: {
+  //   Authorization: `Bearer ${getToken()}`
+  // },
+  params: { // 这里的参数，axios会帮你拼接在URL？后面（查询字符串）
+    channel_id,
+    timestamp
+  }
+})
 
 // 文章 - 反馈 - 不感兴趣
 export const dislikeArticleAPI = ({ artId }) => request({
@@ -72,17 +70,23 @@ export const dislikeArticleAPI = ({ artId }) => request({
 })
 
 // 文章 - 反馈 - 反馈垃圾内容
-export const reportArticleAPI = ({ artId, type, remark }) => {
-  return request({
-    url: '/v1_0/article/reports',
-    method: 'POST',
-    // headers: {
-    //   Authorization: `Bearer ${getToken()}`
-    // },
-    data: {
-      target: artId,
-      type: type,
-      remark: remark
-    }
-  })
-}
+export const reportArticleAPI = ({ artId, type, remark }) => request({
+  url: '/v1_0/article/reports',
+  method: 'POST',
+  // headers: {
+  //   Authorization: `Bearer ${getToken()}`
+  // },
+  data: {
+    target: artId,
+    type: type,
+    remark: remark
+  }
+})
+
+// 搜索 - 联想菜单列表
+export const suggestListAPI = ({ keywords }) => request({
+  url: '/v1_0/suggestion',
+  params: {
+    q: keywords
+  }
+})
