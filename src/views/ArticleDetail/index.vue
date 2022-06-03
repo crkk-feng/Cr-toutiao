@@ -75,12 +75,24 @@
         >
       </div>
     </div>
+
+    <!-- 文章评论区域 -->
+    <div>
+      <CommentList></CommentList>
+    </div>
   </div>
 </template>
 
 <script>
-import { detailAPI, userFollowedAPI, userUnFollowedAPI, likeArticleAPI, unLikeArticleAPI } from '@/api'
+import {
+  detailAPI,
+  userFollowedAPI,
+  userUnFollowedAPI,
+  likeArticleAPI,
+  unLikeArticleAPI
+} from '@/api'
 import { timeAgo } from '@/utils/data.js'
+import CommentList from './CommentList.vue'
 export default {
   data () {
     return {
@@ -138,6 +150,9 @@ export default {
         console.log(res)
       }
     }
+  },
+  components: {
+    CommentList
   }
 }
 </script>

@@ -50,8 +50,19 @@ const directiveObj = {
         // 以上都是原生标签对象
         // console.log(el)
         // el.focus()
-        const theInput = el.querySelector('input')
-        theInput.focus()
+        // 搜索界面 el是div
+        // 文章评论 el是textarea
+        // 以后el还可能是input
+        // 知识点：原生的DOM.nodeName 拿到标签名字（注意：大写的字符串）
+        if (el.nodeName === 'TEXTAREA' || el.nodeName === 'INPUT') {
+          el.focus()
+        } else {
+          // el本身不是输入框，尝试获取一下
+          const theInput = el.querySelector('input')
+          const theTextArea = el.querySelector('textarea')
+          if (theInput) theInput.focus()
+          if (theTextArea) theTextArea.focus()
+        }
       }
     })
   }
