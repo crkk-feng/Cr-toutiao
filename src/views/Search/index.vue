@@ -108,7 +108,7 @@ export default {
 
       // 替换后的值不能用target
       // 例如：输入框里 java,匹配回来的联想菜单Java，Java,jAVa，都被replace换成了输入框target值java
-      return originStr.replaceAll(reg, (match) => {
+      return originStr.replace(reg, (match) => {
         // match就是匹配中时，原字符串里的那个字符，用原来的，给了颜色
         return `<span style="color: red;">${match}</span>`
       })

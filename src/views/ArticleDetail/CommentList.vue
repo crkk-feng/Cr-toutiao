@@ -1,6 +1,7 @@
 <template>
   <div>
     <!-- 评论列表 -->
+    <!-- 1.van-list最好在这个div内，让底部文字/加载中，作为此div的内容，容器padding-bottom底部文字也挤上去了-看得见 -->
     <div
       class="cmt-list"
       :class="{
@@ -8,6 +9,11 @@
         'art-cmt-container-2': !isShowCmtBox,
       }"
     >
+    <!-- 2.van-list包裹列表，组件内源码，会检测网页内滚动事件，判断滚动位置是否快到达内容高度（触底）
+    -> 触发load事件执行 -> loading为true -> 底部加载中文字出现 -> 内部认为现在处于加载中  -->
+    <!-- 3.immediate-check 作用：让list组件不要上来就检查触底
+    原因：list中的列表内容是异步网络请求回来的，标签挂载时，没有高度，list就会判定触底执行一次onLoad方法
+    问题：created发一次，onLoad立刻又发一次，请求2次第一页的数据 -->
       <van-list
         v-model="loading"
         :finished="finished"
@@ -118,6 +124,11 @@ export default {
     this.commentArr = res.data.data.results
     this.totalCount = res.data.data.total_count // 总数量
     this.lastId = res.data.data.last_id // 分页
+
+    // 网页打开->没有评论，res结果空数组
+    if (res.data.data.results.length === 0) {
+      this.finished = true
+    }
   },
   methods: {
     timeAgo,
@@ -175,6 +186,9 @@ export default {
       })
       console.log(res)
       this.commentArr.unshift(res.data.data.new_obj)
+      this.totalCount++
+      this.comText = ''
+      this.commentClickFn() // 让第一条评论滚动到屏幕上
     },
     // 输入框 - 失去焦点
     blurFn () {

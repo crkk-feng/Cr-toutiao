@@ -3,7 +3,14 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import 'amfe-flexible'
-import { NavBar, Form, Field, Button, Tabbar, TabbarItem, Icon, Tab, Tabs, Cell, List, PullRefresh, ActionSheet, Popup, Row, Col, Badge, Search, Image as VanImage, Divider } from 'vant'
+import { NavBar, Form, Field, Button, Tabbar, TabbarItem, Icon, Tab, Tabs, Cell, List, PullRefresh, ActionSheet, Popup, Row, Col, Badge, Search, Image as VanImage, Divider, Tag, CellGroup, Image, Dialog } from 'vant'
+
+Vue.use(Dialog)
+
+Vue.use(Image)
+
+Vue.use(CellGroup)
+Vue.use(Tag)
 
 Vue.use(Divider)
 
@@ -44,6 +51,8 @@ Vue.config.productionTip = false
 const directiveObj = {
   install (Vue) {
     Vue.directive('fofo', {
+      // el代表指令所在标签
+      // 指令所在标签，被插入到真实DOM时才触发，如果标签用display:none隐藏再出现，不会在触发inserted的
       inserted (el) {
         // 指令所在van-search组件
         // 组件根标签是div，input在内部
@@ -58,10 +67,25 @@ const directiveObj = {
           el.focus()
         } else {
           // el本身不是输入框，尝试获取一下
-          const theInput = el.querySelector('input')
-          const theTextArea = el.querySelector('textarea')
-          if (theInput) theInput.focus()
-          if (theTextArea) theTextArea.focus()
+          setTimeout(() => {
+            const theInput = el.querySelector('input')
+            const theTextArea = el.querySelector('textarea')
+            if (theInput) theInput.focus()
+            if (theTextArea) theTextArea.focus()
+          })
+        }
+      },
+      update (el) { // 指令所在标签，被更新时触发
+        if (el.nodeName === 'TEXTAREA' || el.nodeName === 'INPUT') {
+          el.focus()
+        } else {
+          // el本身不是输入框，尝试获取一下
+          setTimeout(() => {
+            const theInput = el.querySelector('input')
+            const theTextArea = el.querySelector('textarea')
+            if (theInput) theInput.focus()
+            if (theTextArea) theTextArea.focus()
+          })
         }
       }
     })

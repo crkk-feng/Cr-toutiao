@@ -28,6 +28,30 @@ export const userUnFollowedAPI = ({ userId }) => request({
   method: 'DELETE'
 })
 
+// 用户 - 获取个人资料(编辑页面使用)
+export const userProfileAPI = () => request({
+  url: '/v1_0/user/profile'
+})
+
+// 用户 - 获取基本信息(我的页面显示数据)
+export const getUserInfoAPI = () => request({
+  url: '/v1_0/user'
+})
+
+// 用户 - 更新头像
+export const updateUserPhotoAPI = (fd) => request({
+  url: '/v1_0/user/photo',
+  method: 'PATCH',
+  data: fd // 外面传进来的new FormData()表单对象
+  // 如果你的请求体直接是FormData表单对象，你也不用自己添加
+  // Content-Type，axios发现数据请求体是表单对象，它也不会转换成json字符串
+  // 也不会带Content-Type: application/json，而是交给浏览器，浏览器发现请求体是formData会自己携带Content-Type
+
+  // Content-Type: application/json; axios携带的，前提: data请求体是对象 -> json字符串 -> 发给后台
+  // Content-Type: multipart/form-data; 浏览器携带的,前提: data请求体必须FormData类型对象
+
+})
+
 // 接口方法, 只负责调用一个接口, 返回一个Promise对象
 // 频道 - 获取所有频道
 export const getAllChannelsAPI = () => request({
