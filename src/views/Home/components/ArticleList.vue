@@ -16,6 +16,7 @@
           :artObj="obj"
           @disLikeEV="disLikeFn"
           @reportEV="reportFn"
+          @click.native="itemClickFn(obj.art_id)"
         >
         </ArticleItem>
       </van-list>
@@ -129,6 +130,13 @@ export default {
       } catch (err) {
         // Notify({ type: 'warning', message: '举报失败' })
       }
+    },
+    // 文章单元格-点击事件
+    // 需要阻止反馈按钮的事件冒泡
+    itemClickFn (id) {
+      this.$router.push({
+        path: `/detail?art_id=${id}`
+      })
     }
   }
 }

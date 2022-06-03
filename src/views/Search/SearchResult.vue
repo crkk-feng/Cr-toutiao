@@ -25,6 +25,7 @@
           :key="obj.art_id"
           :artObj="obj"
           :isShow="false"
+          @click.native="itemClickFn(obj.art_id)"
         >
         </ArticleItem>
       </van-list>
@@ -33,6 +34,7 @@
 </template>
 
 <script>
+// 事件修饰符.native -> 给组件内根标签，绑定原生click点击事件
 import { searchResultAPI } from '@/api'
 import ArticleItem from '@/components/ArticleItem.vue'
 export default {
@@ -73,6 +75,12 @@ export default {
         this.articleList = [...this.articleList, ...res.data.data.results]
         this.loading = false
       }
+    },
+    // 跳转到详情
+    itemClickFn (id) {
+      this.$router.push({
+        path: `/detail?art_id=${id}`
+      })
     }
   }
 }

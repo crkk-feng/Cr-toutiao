@@ -13,6 +13,21 @@ export const loginAPI = ({ mobile, code }) => request({
   }
 })
 
+// 用户 - 关注
+export const userFollowedAPI = ({ userId }) => request({
+  url: '/v1_0/user/followings',
+  method: 'POST',
+  data: {
+    target: userId
+  }
+})
+
+// 用户 - 取消关注
+export const userUnFollowedAPI = ({ userId }) => request({
+  url: `/v1_0/user/followings/${userId}`,
+  method: 'DELETE'
+})
+
 // 接口方法, 只负责调用一个接口, 返回一个Promise对象
 // 频道 - 获取所有频道
 export const getAllChannelsAPI = () => request({
@@ -81,6 +96,28 @@ export const reportArticleAPI = ({ artId, type, remark }) => request({
     type: type,
     remark: remark
   }
+})
+
+// 文章 - 获取详情
+export const detailAPI = ({ artId }) => request({
+  // :id是后台规定的参数名
+  // 前端要在对应路径位置传值(不要写:)
+  url: `/v1_0/articles/${artId}`
+})
+
+// 文章 - 点赞
+export const likeArticleAPI = ({ artId }) => request({
+  url: '/v1_0/article/likings',
+  method: 'POST',
+  data: {
+    target: artId
+  }
+})
+
+// 文章 - 取消点赞
+export const unLikeArticleAPI = ({ artId }) => request({
+  url: `/v1_0/article/likings/${artId}`,
+  method: 'DELETE'
 })
 
 // 搜索 - 联想菜单列表
