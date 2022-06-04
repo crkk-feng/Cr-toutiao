@@ -35,7 +35,7 @@
     <!-- 操作面板 -->
     <van-cell-group class="action-card">
       <van-cell icon="edit" title="编辑资料" is-link to="/user_edit" />
-      <van-cell icon="chat-o" title="小思同学" is-link />
+      <van-cell icon="chat-o" title="小思同学" is-link to="/chat" />
       <van-cell icon="warning-o" title="退出登录" is-link @click="quitFn" />
     </van-cell-group>
   </div>
@@ -45,6 +45,7 @@
 import { getUserInfoAPI } from '@/api'
 import { Dialog } from 'vant'
 import { removeToken } from '@/utils/token.js'
+import { mapMutations } from 'vuex'
 export default {
   data () {
     return {
@@ -55,8 +56,13 @@ export default {
     const res = await getUserInfoAPI()
     console.log(res)
     this.userObj = res.data.data
+    // 直接使用
+    // this.$store.commit('SET_USERPHOTO', this.userObj.photo)
+    // 映射使用
+    this.SET_USERPHOTO(this.userObj.photo)
   },
   methods: {
+    ...mapMutations(['SET_USERPHOTO']),
     // 退出方法
     quitFn () {
       Dialog.confirm({
