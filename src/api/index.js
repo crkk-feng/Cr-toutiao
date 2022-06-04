@@ -13,6 +13,17 @@ export const loginAPI = ({ mobile, code }) => request({
   }
 })
 
+// 用户 - 刷新token
+export const getNewTokenAPI = () => request({
+  url: '/v1_0/authorizations',
+  method: 'PUT',
+  headers: {
+    // 请求拦截器统一携带的是token，而这次请求需要带的是refresh_token
+    // 所以在axios请求拦截器里判断，就是为了这种情况
+    Authorization: 'Bearer ' + localStorage.getItem('refresh_token')
+  }
+})
+
 // 用户 - 关注
 export const userFollowedAPI = ({ userId }) => request({
   url: '/v1_0/user/followings',

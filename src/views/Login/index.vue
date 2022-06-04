@@ -75,6 +75,7 @@ export default {
         // console.log(refresh_token)
         Notify({ type: 'success', message: '登录成功啦！！！' })
         setToken(res.data.data.token)
+        localStorage.setItem('refresh_token', res.data.data.refresh_token)
         // 跳转一定要写在最后->尽量延迟操作
         // location.href -〉当前浏览器地址和要跳转的地址一样(不包含#后面锚点信息)-〉不会刷新网页
         // 地址改变，就会导致网页刷新
