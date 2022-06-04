@@ -52,6 +52,38 @@ export const updateUserPhotoAPI = (fd) => request({
 
 })
 
+// 用户 - 更新基本资料
+export const updateUserProfileAPI = (dataObj) => {
+  // 判断，有什么值，再带什么参数给后台
+  // 写法1：解构赋值
+  // 写法2：想传几对key+value，直接交给后台
+  // 写法3：不够语义化
+  const obj = {
+    name: '',
+    gender: 0,
+    birthday: '',
+    intro: ''
+  }
+  for (const prop in obj) { // 遍历参数对象里每个key
+    if (dataObj[prop] === undefined) { // 用key去外面传入的参数对象匹配，如果没找到（证明外面没传这个参数）
+      delete obj[prop] // 从obj身上移除这对属性和值
+    } else {
+      obj[prop] = dataObj[prop] // 如果使用了，就从外面对象取出对应key的值，保存到obj上
+    }
+  }
+  return request({
+    url: '/v1_0/user/profile',
+    method: 'PATCH', // 局部更新->PUT（全部更新）
+    data: obj
+    // { // data不会忽略值为null的那对key+value，params遇到null值会忽略
+    //   name,
+    //   gender, // 性别0：男 1：女
+    //   birthday, // 生日（要求格式：年-月-日 字符串）
+    //   intro // 个人介绍
+    // }
+  })
+}
+
 // 接口方法, 只负责调用一个接口, 返回一个Promise对象
 // 频道 - 获取所有频道
 export const getAllChannelsAPI = () => request({

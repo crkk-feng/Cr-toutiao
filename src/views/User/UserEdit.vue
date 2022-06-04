@@ -35,7 +35,12 @@
         :value="profileObj.name"
         @click="nameClickFn"
       />
-      <van-cell title="生日" is-link :value="profileObj.birthday" />
+      <van-cell
+        title="生日"
+        is-link
+        :value="profileObj.birthday"
+        @click="birthdayClickFn"
+      />
     </van-cell-group>
 
     <!-- 姓名修改弹窗 -->
@@ -47,19 +52,47 @@
     >
       <input type="text" v-fofo v-model="inputUserName" />
     </van-dialog>
+
+    <!-- 时间选择器 -->
+    <!-- 组件可以自己搭配使用 -->
+    <van-popup
+      round
+      v-model="dateTimePickerShow"
+      position="bottom"
+      :style="{ height: '50%' }"
+    >
+      <van-datetime-picker
+        v-model="currentDate"
+        type="date"
+        title="选择年月日"
+        :min-date="minDate"
+        :max-date="maxDate"
+        @cancel="dateCancelFn"
+        @confirm="confirmFn"
+      />
+    </van-popup>
   </div>
 </template>
 
 <script>
-import { userProfileAPI, updateUserPhotoAPI } from '@/api'
+import {
+  userProfileAPI,
+  updateUserPhotoAPI,
+  updateUserProfileAPI
+} from '@/api'
 import { Notify } from 'vant'
+import { formatDate } from '@/utils/data.js'
 export default {
   name: 'UserEdit',
   data () {
     return {
       profileObj: {}, // 用户基本资料
       show: false, // 控制姓名修改输入框出现/隐藏
-      inputUserName: '' // 修改名字-弹出框绑定值
+      inputUserName: '', // 修改名字-弹出框绑定值
+      minDate: new Date(1900, 0, 1), // 最小范围
+      maxDate: new Date(), // 最大范围(默认获取系统日期-今日)
+      currentDate: new Date(2021, 0, 17), // 当前时间
+      dateTimePickerShow: false // 日期选择器-弹出层显示/隐藏
     }
   },
   async created () {
@@ -90,13 +123,17 @@ export default {
       this.inputUserName = this.profileObj.name
     },
     // 姓名 - 确认框 - 关闭前回调函数
-    beforeCloseFn (action, done) {
+    async beforeCloseFn (action, done) {
       // console.log(action)
       if (action === 'confirm') {
         // 点确认
         const reg = /^[a-zA-Z0-9\u4e00-\u9fa5]{1,7}$/
         if (reg.test(this.inputUserName) === true) {
           // 通过了校验
+          await updateUserProfileAPI({
+            name: this.inputUserName
+          })
+          this.profileObj.name = this.inputUserName // 更新成功 - 回显到页面
           done()
         } else {
           // 没通过校验，给用户提示
@@ -107,6 +144,26 @@ export default {
         // 点取消
         done() // 让弹窗关闭
       }
+    },
+    // 生日单元格 - 点击事件
+    birthdayClickFn () {
+      this.dateTimePickerShow = true // 时间选择器出现
+      // 数据和页面显示 -> 年-月-日 格式的字符串
+      // datetimePicker组件 -> 日期对象
+      this.currentDate = new Date(this.profileObj.birthday) // 组件显示默认生日
+    },
+    // 日期选择器 - 取消事件
+    dateCancelFn () {
+      this.dateTimePickerShow = false
+    },
+    // 日期选择器 - 完成确认事件
+    async confirmFn () {
+      // 日期选择器里currentDate是日期对象，后端需要年-月-日字符串
+      await updateUserProfileAPI({
+        birthday: formatDate(this.currentDate)
+      })
+      this.dateTimePickerShow = false
+      this.profileObj.birthday = formatDate(this.currentDate) // 单元格同步
     }
   }
 }
