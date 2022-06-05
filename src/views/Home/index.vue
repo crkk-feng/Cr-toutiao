@@ -10,7 +10,12 @@
         </template>
         <template #right>
           <!-- 坑: postcss只能翻译style里css样式代码，标签内行内样式它无法转换px转rem,所以需要自己手动计算 -->
-          <van-icon name="search" size="0.48rem" color="#fff" @click="moveSearchPageFn"/>
+          <van-icon
+            name="search"
+            size="0.48rem"
+            color="#fff"
+            @click="moveSearchPageFn"
+          />
         </template>
       </van-nav-bar>
     </div>
@@ -78,7 +83,9 @@ export default {
       userChannelList: [], // 用户选择频道列表
       allChannelList: [], // 所有频道列表
       // articleList: [] // 文章列表
-      show: false // 频道弹出层显示/隐藏
+      show: false, // 频道弹出层显示/隐藏
+      channelScrollTObj: {} // 保存每个频道的滚动位置
+      // 值样子构想：{推荐频道ID：滚动距离，html频道ID：自己滚动距离}
     }
   },
   async created () {
@@ -97,7 +104,7 @@ export default {
   },
   methods: {
     // tabs切换的事件 -> 获取文章列表数据
-    async channelChangeFn () {
+    channelChangeFn () {
       // 文章列表
       // const res2 = await getAllArticleListAPI({
       //   channel_id: this.channelId,
@@ -106,6 +113,14 @@ export default {
       // })
       // console.log(res2)
       // this.articleList = res2.data.data.results
+
+      // tab切换后，设置滚动条的位置
+      // tab切换时，这个组件内部，会把切走的容器height设置为0，滚动条因为没有高度回到了顶部
+      // 切回来的一瞬间，没有高度，滚动时间从底下上来也被触发了，所以才把数据里设置为0
+      // 先让DOM更新完毕，再设置滚动条位置
+      this.$nextTick(() => {
+        document.documentElement.scrollTop = this.channelScrollTObj[this.channelId]
+      })
     },
     // +号点击方法
     plusClickFn () {
@@ -169,6 +184,13 @@ export default {
     // 首页-右上角放大镜点击事件 -> 跳转搜索页面
     moveSearchPageFn () {
       this.$router.push('/search')
+    },
+    // 监听网页点击事件
+    scrollFn () {
+      this.$route.meta.scrollT = document.documentElement.scrollTop
+      // 同时保存当前频道的滚动距离
+      this.channelScrollTObj[this.channelId] = document.documentElement.scrollTop
+      console.log(this.channelScrollTObj)
     }
   },
   components: {
@@ -199,6 +221,24 @@ export default {
           ) === -1
       )
     }
+  },
+  activated () {
+    console.log(this.$route)
+    window.addEventListener('scroll', this.scrollFn)
+    // window和document，监听网页滚动的事件
+    // html标签获取scrollTop，滚动的距离，和设置滚动的位置
+    // 切回来时，立刻设置滚动条位置
+    document.documentElement.scrollTop = this.$route.meta.scrollT
+  },
+  // 前提：组件缓存，切走了就是失去激活生命周期方法触发
+  // 无组件缓存，被切走了
+  // 每个页面都有自己独立的路由规则对象
+  // 该方式不可行
+  // deactivated () {
+  //   this.$route.meta.scrollT = document.documentElement.scrollTop
+  // }
+  deactivated () {
+    window.removeEventListener('scroll', this.scrollFn)
   }
 }
 </script>

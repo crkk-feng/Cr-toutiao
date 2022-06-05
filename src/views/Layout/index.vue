@@ -1,7 +1,9 @@
 <template>
   <div class="home_container">
     <!-- 二级路由页面 -->
-    <router-view></router-view>
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
 
     <!-- 下面底部导航 -->
     <van-tabbar v-model="active" route>

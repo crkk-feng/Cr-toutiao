@@ -27,7 +27,7 @@
 <script>
 import ArticleItem from '../../../components/ArticleItem.vue'
 import { getAllArticleListAPI, dislikeArticleAPI, reportArticleAPI } from '@/api'
-import { Notify } from 'vant'
+import Notify from '@/ui/Notify'
 
 // 产生问题：网页刚打开，created里请求和onLoad里请求同时发送，请求的都是最新数据
 // onLoad中，2次一样的数据合并，数据重复，key重复了

@@ -34,7 +34,11 @@ const routes = [
     beforeEnter (to, from, next) {
       if (getToken()?.length > 0) {
         // 证明有token-已经登录了
-        next(false) // 阻止跳转原地呆着
+        // next(false) // 阻止跳转原地呆着
+        // 存在缺陷，在文章详情页想进入登录页，无法进行后退
+        // 措施：如果登录，强制返回首页
+        next('/layout/home')
+        // 手机app里没有地址栏，无法破坏跳转过程
       } else {
         next() // 其它情况通通放行
       }
@@ -49,7 +53,10 @@ const routes = [
       {
         path: 'home',
         // component: Home
-        component: () => import(/* webpackChunkName: "Home" */ '@/views/Home')
+        component: () => import(/* webpackChunkName: "Home" */ '@/views/Home'),
+        meta: {
+          scrollT: 0 // 保存首页离开时，滚动条的位置
+        }
       },
       {
         path: 'user',
@@ -97,6 +104,7 @@ const router = new VueRouter({
 //   if (getToken()?.length > 0 && to.path === '/login') {
 //     // 证明有token-已经登录了
 //     next(false) // 阻止跳转原地呆着
+//     next('/layout/home')
 //   } else {
 //     next() // 其它情况通通放行
 //   }

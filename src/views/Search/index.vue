@@ -64,14 +64,16 @@
 // 3.点击历史记录 -> 点击文字 -> 搜索结果页
 
 import { suggestListAPI } from '@/api'
+import { setStorage, getStorage } from '@/utils/storage'
 export default {
+  name: 'Search',
   data () {
     return {
       kw: '', // 搜索关键字
       timer: null, // 防抖的定时器
       suggestList: [], // 联想建议列表
       // parse转回数组
-      history: JSON.parse(localStorage.getItem('his')) || [] // 搜索历史
+      history: JSON.parse(getStorage('his')) || [] // 搜索历史
     }
   },
   methods: {
@@ -177,7 +179,7 @@ export default {
         const theSet = new Set(this.history)
         // Set类型 -> Array数组类型
         const arr = Array.from(theSet)
-        localStorage.setItem('his', JSON.stringify(arr))
+        setStorage('his', JSON.stringify(arr))
       }
     }
   }

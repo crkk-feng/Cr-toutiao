@@ -80,8 +80,9 @@ import {
   updateUserPhotoAPI,
   updateUserProfileAPI
 } from '@/api'
-import { Notify } from 'vant'
+import Notify from '@/ui/Notify'
 import { formatDate } from '@/utils/data.js'
+import { mapMutations } from 'vuex'
 export default {
   name: 'UserEdit',
   data () {
@@ -101,6 +102,7 @@ export default {
     this.profileObj = res.data.data
   },
   methods: {
+    ...mapMutations(['SET_USERPHOTO']),
     // 文件选择改变 - 事件
     async onFileChange (e) {
       if (e.target.files.length === 0) return // 用户可能没有选择图片文件阻止代码往下
@@ -112,6 +114,7 @@ export default {
       const res = await updateUserPhotoAPI(theFd)
       console.log(res)
       this.profileObj.photo = res.data.data.photo
+      this.SET_USERPHOTO(res.data.data.photo) // 更新成功后，同步到vuex中
     },
     // 图片 - 点击事件
     imageClickFn () {
