@@ -120,6 +120,7 @@ export default {
       // 先让DOM更新完毕，再设置滚动条位置
       this.$nextTick(() => {
         document.documentElement.scrollTop = this.channelScrollTObj[this.channelId]
+        document.body.scrollTop = this.channelScrollTObj[this.channelId]
       })
     },
     // +号点击方法
@@ -187,9 +188,9 @@ export default {
     },
     // 监听网页点击事件
     scrollFn () {
-      this.$route.meta.scrollT = document.documentElement.scrollTop
+      this.$route.meta.scrollT = document.documentElement.scrollTop || document.body.scrollTop
       // 同时保存当前频道的滚动距离
-      this.channelScrollTObj[this.channelId] = document.documentElement.scrollTop
+      this.channelScrollTObj[this.channelId] = document.documentElement.scrollTop || document.body.scrollTop
       console.log(this.channelScrollTObj)
     }
   },
